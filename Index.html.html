@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oficina Cultural de Uberlândia</title>
+<style>
+  :root {
+    --parede: #7d1a17;      /* vermelho da fachada */
+    --parede-escuro: #571110;
+    --friso: #e8a921;       /* amarelo dos frisos */
+    --creme: #f6ecd6;
+    --tinta: #4a0f0e;
+    --folha: #3f7a4a;       /* verde das árvores */
+    --ceu: #dfe3e6;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--parede-escuro);
+    background-image: linear-gradient(180deg, var(--parede) 0, var(--parede-escuro) 520px);
+    color: var(--creme);
+    font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+    line-height: 1.55;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 40px 20px 64px; }
+
+  /* Centro do mapa */
+  .hub {
+    max-width: 640px; margin: 0 auto; text-align: center;
+    border: 3px solid var(--friso); border-radius: 18px 18px 6px 6px;
+    background: var(--parede); padding: 28px 26px 26px; position: relative;
+  }
+  .frisos { display: flex; gap: 8px; justify-content: center; margin-bottom: 18px; }
+  .frisos i { display: block; width: 34px; height: 9px; background: var(--friso); border-radius: 2px; }
+  .frisos i:nth-child(2n) { width: 14px; }
+  h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.7rem, 5vw, 2.5rem); line-height: 1.15; margin: 0 0 14px;
+    color: var(--friso); font-weight: 700;
+  }
+  .hub p { margin: 0; font-size: 1.02rem; text-align: left; }
+
+  /* Árvore */
+  .tree { position: relative; list-style: none; margin: 0; padding: 56px 0 0; display: grid; gap: 28px; }
+  .tree::before {
+    content: ""; position: absolute; top: 0; bottom: 24px; left: 50%; width: 4px; margin-left: -2px;
+    background: repeating-linear-gradient(180deg, var(--friso) 0 22px, transparent 22px 32px);
+  }
+  .tree li { position: relative; width: calc(50% - 44px); }
+  .tree li:nth-child(odd)  { justify-self: start; }
+  .tree li:nth-child(even) { justify-self: end; }
+  .tree li::before {   /* conector horizontal */
+    content: ""; position: absolute; top: 34px; height: 4px; width: 44px; background: var(--friso);
+  }
+  .tree li:nth-child(odd)::before  { left: 100%; }
+  .tree li:nth-child(even)::before { right: 100%; }
+  .tree li::after {    /* nó no tronco */
+    content: ""; position: absolute; top: 27px; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--folha); border: 3px solid var(--creme);
+  }
+  .tree li:nth-child(odd)::after  { left: calc(100% + 35px); }
+  .tree li:nth-child(even)::after { right: calc(100% + 35px); }
+
+  a.node {
+    display: block; text-decoration: none; color: var(--tinta);
+    background: var(--creme); border-radius: 6px 14px 6px 14px;
+    border-left: 10px solid var(--friso); padding: 16px 18px 16px 16px;
+    transition: transform .15s ease, box-shadow .15s ease;
+    box-shadow: 0 3px 0 rgba(0,0,0,.25);
+  }
+  a.node:hover, a.node:focus-visible { transform: translateY(-3px); box-shadow: 0 8px 0 rgba(0,0,0,.25); }
+  a.node:focus-visible { outline: 3px solid var(--friso); outline-offset: 3px; }
+  a.node h2 { font-family: Georgia, serif; font-size: 1.2rem; line-height: 1.25; margin: 0 0 6px; color: var(--parede); }
+  a.node .sub { font-size: .92rem; margin: 0 0 8px; }
+  a.node ul { margin: 0; padding-left: 18px; font-size: .88rem; }
+  a.node li { width: auto; position: static; margin: 2px 0; }
+  a.node li::before, a.node li::after { content: none; }
+  a.node .via { display: block; margin-top: 10px; font-size: .8rem; font-weight: 700; color: var(--folha); }
+
+  .mapa a.node { border-left-color: var(--folha); }
+
+  footer { margin-top: 48px; text-align: center; font-size: .82rem; opacity: .8; }
+
+  @media (max-width: 700px) {
+    .tree::before { left: 14px; margin-left: 0; }
+    .tree li, .tree li:nth-child(odd), .tree li:nth-child(even) { width: auto; margin-left: 44px; justify-self: stretch; }
+    .tree li:nth-child(odd)::before, .tree li:nth-child(even)::before { left: -30px; right: auto; width: 30px; }
+    .tree li:nth-child(odd)::after, .tree li:nth-child(even)::after { left: -39px; right: auto; }
+  }
+  @media (prefers-reduced-motion: reduce) { a.node { transition: none; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <section class="hub">
+    <div class="frisos" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    <h1>Oficina Cultural de Uberlândia</h1>
+    <p>
+      Num sobrado vermelho e amarelo da Praça Clarimundo Carneiro, no Centro, a Oficina Cultural reúne
+      arte, memória e prática criativa em um complexo de prédios do início do século XX, ligado à história
+      da energia elétrica da cidade. Tombada como patrimônio histórico municipal em 1985, foi a primeira
+      Oficina Cultural de Minas Gerais e hoje abriga galerias, pinacoteca, biblioteca de arte, ateliê de gravura
+      e salas de música, dança, artesanato e literatura. Vale conhecer pela arquitetura, pelas exposições e
+      pelo convite a uma pausa em meio à correria do Centro.
+    </p>
+  </section>
+
+  <ol class="tree">
+    <li class="mapa">
+      <a class="node" href="https://www.google.com/maps/place/Oficina+Cultural+de+Uberl%C3%A2ndia/@-18.9235063,-48.2822466,3a,75y,90t/data=!3m7!1e2!3m5!1sCIHM0ogKEICAgICyuPDb7AE!2e10!3e12!7i5522!8i3107!4m11!1m2!2m1!1sCentro+cultural!3m7!1s0x94a444ff0535520b:0x6c18799fea9e0885!8m2!3d-18.9235063!4d-48.2822466!10e5!15sCg9DZW50cm8gY3VsdHVyYWxaESIPY2VudHJvIGN1bHR1cmFskgEPY3VsdHVyYWxfY2VudGVymgEjQ2haRFNVaE5NRzluUzBWSlEwRm5TVVJKTFMxUWJVWm5FQUXgAQD6AQQIABA7!16s%2Fg%2F1229qntb?entry=ttu&g_ep=EgoyMDI2MTEwMS4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer">
+        <h2>Como chegar</h2>
+        <p class="sub">Endereço e localização no Google Maps.</p>
+        <ul>
+          <li>Praça Clarimundo Carneiro, 204</li>
+          <li>Centro, Uberlândia – MG</li>
+        </ul>
+        <span class="via">Abrir no Google Maps</span>
+      </a>
+    </li>
+
+    <li>
+      <a class="node" href="https://www.uberlandia.mg.gov.br/prefeitura/secretarias/cultura-e-turismo/patrimonio-historico/bens-tombados-e-registrados/oficina-cultural/" target="_blank" rel="noopener noreferrer">
+        <h2>História, espaços e horários</h2>
+        <p class="sub">Ficha oficial do bem tombado, no portal da Prefeitura.</p>
+        <ul>
+          <li>Da Companhia de Força e Luz à primeira Oficina Cultural de MG (1995)</li>
+          <li>Galeria Lourdes Saraiva, Pinacotecas, Museu de Presépios e mais</li>
+          <li>Galerias abertas de segunda a sexta, das 11h às 17h</li>
+        </ul>
+        <span class="via">Ler no portal da Prefeitura</span>
+      </a>
+    </li>
+
+    <li>
+      <a class="node" href="https://www.uberlandia.mg.gov.br/2020/07/15/prefeitura-finaliza-ampla-reforma-da-oficina-cultural-de-uberlandia/" target="_blank" rel="noopener noreferrer">
+        <h2>A grande restauração de 2020</h2>
+        <p class="sub">Dez meses de obras para preservar o prédio e dar mais conforto ao público.</p>
+        <ul>
+          <li>Cerca de R$ 500 mil do Fundo Municipal de Cultura</li>
+          <li>Pisos, esquadrias, telhados, pintura e iluminação em LED</li>
+          <li>Equipamentos de prevenção e combate a incêndio</li>
+        </ul>
+        <span class="via">Ler a notícia de julho de 2020</span>
+      </a>
+    </li>
+
+    <li>
+      <a class="node" href="https://www.uberlandia.mg.gov.br/2021/06/25/oficina-cultural-esta-disponivel-para-visitacao-mediante-agendamento/" target="_blank" rel="noopener noreferrer">
+        <h2>Como visitar e agendar</h2>
+        <p class="sub">Reabertura ao público, com cinco blocos e mais de 20 salas.</p>
+        <ul>
+          <li>Sala Geralda Guimarães, Pinacoteca, Fundinho Cultura e Oficina de Gravura</li>
+          <li>Auditório Roberto Rezende, conhecido pelo piano</li>
+          <li>Agendamento: (34) 3231-8608 ou 3214-9889</li>
+        </ul>
+        <span class="via">Ler a notícia de junho de 2021</span>
+      </a>
+    </li>
+
+    <li>
+      <a class="node" href="https://www.uberlandia.mg.gov.br/2025/09/11/agenda-cultural-destaca-aniversario-de-30-anos-da-oficina-cultural/" target="_blank" rel="noopener noreferrer">
+        <h2>30 anos de programação</h2>
+        <p class="sub">A festa de aniversário e a agenda cultural gratuita de setembro de 2025.</p>
+        <ul>
+          <li>Vernissage da exposição “Entre a casa e o jardim, o que brota em mim”</li>
+          <li>Apresentações da Banda Sinfônica Municipal e do Coral da UFU</li>
+          <li>Feira da Cultura, editais e outras exposições</li>
+        </ul>
+        <span class="via">Ler a notícia de setembro de 2025</span>
+      </a>
+    </li>
+
+    <li>
+      <a class="node" href="https://g1.globo.com/mg/triangulo-mineiro/noticia/2026/05/24/em-meio-a-correria-do-centro-oficina-cultural-de-uberlandia-convida-visitantes-a-desacelerar.ghtml" target="_blank" rel="noopener noreferrer">
+        <h2>Uma pausa no meio do Centro</h2>
+        <p class="sub">Reportagem do g1 sobre a Oficina Cultural como convite a desacelerar.</p>
+        <ul>
+          <li>Reportagem de maio de 2026</li>
+          <li>O olhar da imprensa sobre visitar o espaço hoje</li>
+        </ul>
+        <span class="via">Ler a reportagem no g1</span>
+      </a>
+    </li>
+  </ol>
+
+  <footer>Informações extraídas do portal da Prefeitura de Uberlândia e do g1. Confirme horários e agendamento antes de visitar.</footer>
+</main>
+</body>
+</html>
